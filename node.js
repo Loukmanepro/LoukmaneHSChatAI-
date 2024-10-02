@@ -1,13 +1,14 @@
-npm install express body-parser
+// استيراد المكتبات
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+require('dotenv').config(); // استيراد dotenv لتحميل متغيرات البيئة من ملف .env
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = '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'; // ضع مفتاح API هنا
+const API_KEY = process.env.OPENAI_API_KEY; // قراءة مفتاح API من متغير البيئة
 const API_URL = 'https://api.openai.com/v1/chat/completions'; // عنوان API الخاص بـ OpenAI
 
 // إضافة مسار الجذر
@@ -15,6 +16,7 @@ app.get('/api/chat', (req, res) => {
     res.send('Welcome to the AI Chat Server!'); // رسالة ترحيبية
 });
 
+// مسار API للرد على الرسائل
 app.post('/api/chat', async (req, res) => {
     const userMessage = req.body.message;
 
@@ -24,7 +26,7 @@ app.post('/api/chat', async (req, res) => {
             messages: [{ role: 'user', content: userMessage }],
         }, {
             headers: {
-                'Authorization': `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`, // استخدم مفتاح API هنا
+                'Authorization': `Bearer ${API_KEY}`, // استخدم المفتاح المحفوظ في متغير البيئة
                 'Content-Type': 'application/json',
             },
         });
@@ -37,6 +39,7 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// بدء الخادم على المنفذ المحدد
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
